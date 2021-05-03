@@ -51,25 +51,48 @@ hidden3.next_layer = output;
 output.init(hidden3);
 
 %% Train
-for i = 1:10000
-    probs = input.forward(X_train);
+idx = 1;
+batch = 128;
+epoch = 20;
+m = size(X_train, 2);
+
+lastmsglen = 0;
+
+for i = 1:epoch
+    randpos = randperm(m);
+    fprintf('\nEpoch: %d / %d\n', i, epoch);
     
+    while idx <= m
+        batchX = zeros(size(X_train, 1), batch);
+        batchy = zeros(size(y_train,1), batch);
+            
+        for k = idx:min(idx + batch - 1, m)
+            batchX(:, k - idx + 1) = X_train(:, randpos(k));
+            batchy(:, k - idx + 1) = y_train(:, randpos(k));
+        end
+        
+        % Forward propagation
+        input.forward(batchX);
+
+        % Backward propagation
+        output.y = batchy;
+        output.backward(size(output.y, 2), 1);
+        output.update(0.0001);
+        
+        idx = idx + batch;
+    end
+    
+    % disp(output.A(1, 1));
+    probs = input.forward(X_train);
     [~, y] = max(probs, [], 1);
     pred = bsxfun(@eq, y, [1:10]');
     correct = find(all(pred == y_train));
     accuracy = length(correct) / size(y_train, 2);
     
-    m = size(output.y, 2);
     J = (1/m) * sum(sum((-y_train) .* log(probs) - (1-y_train) .* log(1-probs)));
     fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', i, accuracy * 100, J);
     
-    output.y = y_train;
-    
-    
-    % disp(output.A(1, 1));
-    % disp("Loss: " + gather(loss));
-    output.backward(size(output.y, 2), 0.1);
-    output.update(0.02);
+    idx = 1;
 end
 
 %% Test
@@ -81,5 +104,5 @@ accuracy = length(correct) / size(y_test, 2);
 fprintf('Classification accuracy is %3.2f%%\n', accuracy * 100);
 
 %% Results
-% Max: Epoch: 1043: Classification accuracy is 75.14%, loss: 10.042690
+% Max: Epoch: 20: Classification accuracy is 75.14%, loss: 10.042690
 % Classification accuracy is 75.38%
