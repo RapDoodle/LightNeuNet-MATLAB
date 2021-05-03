@@ -1,5 +1,0 @@
-function a = softmax(z)
-% matrix z sh
-a = exp(z) ./ sum(exp(z), [2]);
-end
-
