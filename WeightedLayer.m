@@ -39,7 +39,9 @@ classdef WeightedLayer < Layer
                 layer.W = randn(layer.units, prev_layer.units) * sqrt(2 / prev_layer.units);
             
             elseif strcmp(layer.kernel_initializer, 'random')
-                layer.W = -1 + rand(layer.units, prev_layer.units) * 2;
+                % layer.W = -1 + rand(layer.units, prev_layer.units) * 2;
+                epsilon_init = 0.12;
+                layer.W = rand(layer.units, prev_layer.units) * 2 * epsilon_init - epsilon_init;
             
             else
                 throw(MException('layer:unknownInitializer', ...
