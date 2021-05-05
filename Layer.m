@@ -6,8 +6,8 @@ classdef Layer < matlab.mixin.Heterogeneous & handle
         units
         type
         
-        next_layer = 0
-        prev_layer = 0
+        nextlayer = 0
+        prevlayer = 0
     end
     
     methods(Abstract)

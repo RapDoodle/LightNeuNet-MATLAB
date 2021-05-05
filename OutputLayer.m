@@ -26,11 +26,11 @@ classdef OutputLayer < WeightedLayer
             
             if strcmp(output.activation, 'sigmoid') || strcmp(output.activation, 'softmax')
                 output.dZ = output.A - output.y;
-                output.dW = (1/m) .* (output.dZ * output.prev_layer.A');
+                output.dW = (1/m) .* (output.dZ * output.prevlayer.A');
                 output.db = (1/m) .* sum(output.dZ, 2);
             end
             
-            output.prev_layer.backward(m, lambd);
+            output.prevlayer.backward(m, lambd);
         end
     end
 end

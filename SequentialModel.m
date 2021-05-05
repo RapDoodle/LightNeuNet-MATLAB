@@ -46,7 +46,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                 else
                     % The hidden layers and output layer
                     model.layers{i}.init(model.layers{i-1});
-                    model.layers{i-1}.next_layer = model.layers{i};
+                    model.layers{i-1}.nextlayer = model.layers{i};
                     if i == length(model.layers)
                         model.outputlayer = model.layers{i};
                     end

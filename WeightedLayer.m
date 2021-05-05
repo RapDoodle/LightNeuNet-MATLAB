@@ -24,8 +24,8 @@ classdef WeightedLayer < Layer
     end
     
     methods
-        function init(layer, prev_layer)
-            if ~isa(prev_layer, 'Layer')
+        function init(layer, prevlayer)
+            if ~isa(prevlayer, 'Layer')
                 throw(MException('layer:noPreviousLayer', ...
                     'A previous layer must be defined for a layer layer'));
             end
@@ -33,22 +33,22 @@ classdef WeightedLayer < Layer
             layer.b = zeros(layer.units, 1);
             
             if strcmp(layer.kernel_initializer, 'uniform')
-                layer.W = -1 + rand(layer.units, prev_layer.units) * 2;
+                layer.W = -1 + rand(layer.units, prevlayer.units) * 2;
             
             elseif strcmp(layer.kernel_initializer, 'he')
-                layer.W = randn(layer.units, prev_layer.units) * sqrt(2 / prev_layer.units);
+                layer.W = randn(layer.units, prevlayer.units) * sqrt(2 / prevlayer.units);
             
             elseif strcmp(layer.kernel_initializer, 'random')
-                % layer.W = -1 + rand(layer.units, prev_layer.units) * 2;
+                % layer.W = -1 + rand(layer.units, prevlayer.units) * 2;
                 epsilon_init = 0.12;
-                layer.W = rand(layer.units, prev_layer.units) * 2 * epsilon_init - epsilon_init;
+                layer.W = rand(layer.units, prevlayer.units) * 2 * epsilon_init - epsilon_init;
             
             else
                 throw(MException('layer:unknownInitializer', ...
                     'Unknown initializer %s', layer.initializer));
             end
             
-            layer.prev_layer = prev_layer;
+            layer.prevlayer = prevlayer;
         end
         
         function y = forward(layer, X)
@@ -85,8 +85,8 @@ classdef WeightedLayer < Layer
             layer.W = layer.W - learning_rate * layer.dW;
             layer.b = layer.b - learning_rate * layer.db;
             
-            if isa(layer.prev_layer, 'WeightedLayer')
-                layer.prev_layer.update(learning_rate);
+            if isa(layer.prevlayer, 'WeightedLayer')
+                layer.prevlayer.update(learning_rate);
             end
         end
     end

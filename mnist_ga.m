@@ -21,21 +21,21 @@ end
 %% Model
 model = SequentialModel();
 
-model.add(InputLayer(784));
+model.add(GAInputLayer(784));
 
 options.activation = "tanh";
 options.use_bias = true;
 options.kernel_initializer = "random";
 
-model.add(DenseLayer(512, options));
-model.add(DenseLayer(384, options));
-model.add(DenseLayer(256, options));
+model.add(GADenseLayer(512, options));
+model.add(GADenseLayer(384, options));
+model.add(GADenseLayer(256, options));
 
 options.activation = "softmax";
 options.use_bias = true;
 options.kernel_initializer = "random";
 
-model.add(OutputLayer(10, options));
+model.add(GAOutputLayer(10, options));
 
 % Compile the model
 model.compile();

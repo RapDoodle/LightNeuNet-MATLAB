@@ -13,16 +13,16 @@ classdef InputLayer < Layer
             input.units = units;
         end
         
-        function input = init(input, next_layer)
+        function input = init(input, nextlayer)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             input.prev_layer = 0;
-            input.next_layer = next_layer;
+            input.nextlayer = nextlayer;
         end
         
         function y = forward(input, X)
             input.A = X;
-            y = input.next_layer.forward(X);
+            y = input.nextlayer.forward(X);
         end
         
         function backward(input, m, lambd)
