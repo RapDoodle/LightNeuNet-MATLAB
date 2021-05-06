@@ -39,7 +39,7 @@ options.kernel_initializer = "random";
 model.add(GAOutputLayer(10, options));
 
 %% GA Testing
-model.populate(50);
+model.populate(300);
 % test = model.newindividual()
 
 %% AA
