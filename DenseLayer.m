@@ -12,6 +12,7 @@ classdef DenseLayer < WeightedLayer
             dense.activation = options.activation;
             dense.use_bias = options.use_bias;
             dense.kernel_initializer = options.kernel_initializer;
+            dense.options = options;
         end
         
         function setnextlayer(dense, nextlayer)
@@ -22,8 +23,8 @@ classdef DenseLayer < WeightedLayer
             dense.nextlayer = nextlayer;
         end
         
-        function y = forward(dense, X)
-            forward@WeightedLayer(dense, X);
+        function y = forward(dense, X, cache)
+            Aout = forward@WeightedLayer(dense, X, cache);
             
             if ~isa(dense.nextlayer, 'Layer')
                 throw(MException('Dense:notALayer', ...
@@ -33,7 +34,7 @@ classdef DenseLayer < WeightedLayer
             % Pass the output of the current layer to the next layer
             % This y is not the y in the output layer, just the output
             % resulted in the current layer
-            y = dense.nextlayer.forward(dense.A);
+            y = dense.nextlayer.forward(Aout, cache);
             
         end
         
@@ -61,6 +62,15 @@ classdef DenseLayer < WeightedLayer
             dense.db = (1/m) .* sum(dense.dZ, 2);
             
             dense.prevlayer.backward(m, lambd);
+        end
+        
+        function newlayer = copy(layer)
+            newlayer = DenseLayer(layer.units, layer.options);
+            layer.move(newlayer);
+        end
+        
+        function newlayer = move(layer, newlayer)
+            move@WeightedLayer(layer, newlayer);
         end
         
     end

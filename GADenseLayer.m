@@ -9,6 +9,15 @@ classdef GADenseLayer < GAWeightedLayer & DenseLayer
         function gadense = GADenseLayer(units, options)
             gadense = gadense@DenseLayer(units, options);
         end
+        
+        function newlayer = copy(layer)
+            newlayer = GADenseLayer(layer.units, layer.options);
+            layer.move(newlayer);
+        end
+        
+        function newlayer = move(layer, newlayer)
+            move@DenseLayer(layer, newlayer);
+        end
     end
 end
 

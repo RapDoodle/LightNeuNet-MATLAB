@@ -19,7 +19,7 @@ if use_gpu
 end
 
 %% Model
-model = SequentialModel();
+model = GAModel();
 
 model.add(GAInputLayer(784));
 
@@ -29,6 +29,7 @@ options.kernel_initializer = "random";
 
 model.add(GADenseLayer(512, options));
 model.add(GADenseLayer(384, options));
+model.add(GADenseLayer(384, options));
 model.add(GADenseLayer(256, options));
 
 options.activation = "softmax";
@@ -37,26 +38,34 @@ options.kernel_initializer = "random";
 
 model.add(GAOutputLayer(10, options));
 
-% Compile the model
-model.compile();
+%% GA Testing
+model.populate(50);
+% test = model.newindividual()
 
-%% Train
+%% AA
+options.keeprate = 0.6;
+options.mutationrate = 0.01;
+options.generations = 3;
+[minfitnesses, maxfitnesses] = model.run(@forwardpred, X_train, y_train, options);
+
+%% Just to make sure the model functions correctly
 options.batch = 128;
 options.epoch = 20;
 options.learningrate = 0.0001;
 options.lambd = 1;
 options.loss = "crossentropy";
 
-model.fit(X_train, y_train, options);
+model.forest{1}.fit(X_train, y_train, options);
+
 
 
 %% Test
-probs = model.predict(X_test);
+probs = model.forest{1000}.predict(X_test);
 [~, y] = max(probs, [], 1);
 pred = bsxfun(@eq, y, [1:10]');
 correct = find(all(pred == y_test));
 accuracy = length(correct) / size(y_test, 2);
-fprintf('Classification accuracy is %3.2f%%\n', accuracy * 100);
+fprintf('\nClassification accuracy is %3.2f%%\n', accuracy * 100);
 
 %% Results
 % Max: Epoch: 20: Classification accuracy is 75.14%, loss: 10.042690

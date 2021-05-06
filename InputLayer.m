@@ -20,12 +20,21 @@ classdef InputLayer < Layer
             input.nextlayer = nextlayer;
         end
         
-        function y = forward(input, X)
+        function y = forward(input, X, cache)
             input.A = X;
-            y = input.nextlayer.forward(X);
+            y = input.nextlayer.forward(X, cache);
         end
         
-        function backward(input, m, lambd)
+        function backward(~, ~, ~)
+        end
+        
+        function newlayer = move(input, newlayer)
+            newlayer.A = input.A;
+        end
+        
+        function newlayer = copy(input)
+            newlayer = InputLayer(input.units);
+            input.move(newlayer);
         end
     end
 end

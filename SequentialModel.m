@@ -22,7 +22,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
         end
         
         function y = predict(model, X)
-            y = model.inputlayer.forward(X);
+            y = model.inputlayer.forward(X, false);
         end
         
         function compile(model)
@@ -77,7 +77,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                     end
 
                     % Forward propagation
-                    model.inputlayer.forward(batchX);
+                    model.inputlayer.forward(batchX, true);
 
                     % Backward propagation
                     model.outputlayer.y = batchy;
@@ -88,9 +88,9 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                 end
 
                 % disp(output.A(1, 1));
-                probs = model.inputlayer.forward(X);
+                probs = model.inputlayer.forward(X, false);
                 [~, y_out] = max(probs, [], 1);
-                pred = bsxfun(@eq, y_out, [1:10]');
+                pred = bsxfun(@eq, y_out, (1:10)');
                 correct = find(all(pred == y));
                 accuracy = length(correct) / size(y, 2);
                 

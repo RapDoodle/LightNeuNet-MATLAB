@@ -53,7 +53,7 @@ model.fit(X_train, y_train, options);
 %% Test
 probs = model.predict(X_test);
 [~, y] = max(probs, [], 1);
-pred = bsxfun(@eq, y, [1:10]');
+pred = bsxfun(@eq, y, (1:10)');
 correct = find(all(pred == y_test));
 accuracy = length(correct) / size(y_test, 2);
 fprintf('Classification accuracy is %3.2f%%\n', accuracy * 100);

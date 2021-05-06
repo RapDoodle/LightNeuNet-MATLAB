@@ -14,11 +14,11 @@ classdef OutputLayer < WeightedLayer
             output.activation = options.activation;
             output.use_bias = options.use_bias;
             output.kernel_initializer = options.kernel_initializer;
+            output.options = options;
         end
         
-        function y = forward(output, X)
-            forward@WeightedLayer(output, X);
-            y = output.A;
+        function y = forward(output, X, cache)
+            y = forward@WeightedLayer(output, X, cache);
         end
         
         function backward(output, m, lambd)
@@ -31,6 +31,16 @@ classdef OutputLayer < WeightedLayer
             end
             
             output.prevlayer.backward(m, lambd);
+        end
+        
+        function newlayer = copy(layer)
+            newlayer = OutputLayer(layer.units, layer.options);
+            layer.move(newlayer);
+        end
+        
+        function newlayer = move(layer, newlayer)
+            move@WeightedLayer(layer, newlayer);
+            newlayer.y = layer.y;
         end
     end
 end

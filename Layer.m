@@ -11,8 +11,10 @@ classdef Layer < matlab.mixin.Heterogeneous & handle
     end
     
     methods(Abstract)
-        y = forward(layer, X)
+        y = forward(layer, X, cache)
         backward(layer, m, lambd)
+        newlayer = copy(newlayer)
+        newlayer = move(layer, mewlayer)
     end
 end
 

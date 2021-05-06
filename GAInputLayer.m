@@ -12,10 +12,19 @@ classdef GAInputLayer < InputLayer & GALayer
             gainput = gainput@InputLayer(units);
         end
         
-        function mutate(layer, mutationrate)         
+        function mutate(~, ~)         
         end
         
-        function crossover(layer, mateW, mateb)
+        function crossover(~, ~, ~)
+        end
+        
+        function newlayer = copy(layer)
+            newlayer = GAInputLayer(layer.units);
+            layer.move(newlayer);
+        end
+        
+        function newlayer = move(layer, newlayer)
+            move@InputLayer(layer, newlayer);
         end
     end
 end

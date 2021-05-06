@@ -18,6 +18,8 @@ classdef WeightedLayer < Layer
         
         b
         db
+        
+        options
     end
     
     methods(Abstract)
@@ -51,34 +53,40 @@ classdef WeightedLayer < Layer
             layer.prevlayer = prevlayer;
         end
         
-        function y = forward(layer, X)
-            layer.Z = layer.W * X;
+        function y = forward(layer, X, cache)
+            Zlocal = layer.W * X;
+            
             
             if layer.use_bias
-                layer.Z = layer.Z + layer.b;
+                Zlocal = Zlocal + layer.b;
             end
             
             if strcmp(layer.activation, 'sigmoid')
-                layer.A = sigmoid(layer.Z);
+                Alocal = sigmoid(Zlocal);
                 
             elseif strcmp(layer.activation, 'relu')
-                layer.A = relu(layer.Z);
+                Alocal = relu(Zlocal);
                 
             elseif strcmp(layer.activation, 'softmax')
-                layer.A = softmax(layer.Z);
+                Alocal = softmax(Zlocal);
                 
             elseif strcmp(layer.activation, 'tanh')
-                layer.A = tanh(layer.Z);
+                Alocal = tanh(Zlocal);
                 
             elseif strcmp(layer.activation, 'linear')
-                layer.A = layer.Z;
+                Alocal = Zlocal;
                 
             else
                 throw(MException('layer:unknownActivation', ...
                     'Unknown activation function %s', layer.activation));
             end
             
-            y = [];
+            if cache
+                layer.Z = Zlocal;
+                layer.A = Alocal;
+            end
+            
+            y = Alocal;
         end
         
         function update(layer, learning_rate)
@@ -88,6 +96,24 @@ classdef WeightedLayer < Layer
             if isa(layer.prevlayer, 'WeightedLayer')
                 layer.prevlayer.update(learning_rate);
             end
+        end
+        
+        function newlayer = move(layer, newlayer)
+            newlayer.use_bias = layer.use_bias;
+            newlayer.activation = layer.activation;
+            newlayer.kernel_initializer = layer.kernel_initializer;
+            
+            newlayer.A = layer.A;
+            newlayer.dA = layer.dA;
+            
+            newlayer.Z = layer.Z;
+            newlayer.dZ = layer.dZ;
+            
+            newlayer.W = layer.W;
+            newlayer.dW = layer.dW;
+            
+            newlayer.b = layer.b;
+            newlayer.db = layer.db;
         end
     end
 end
