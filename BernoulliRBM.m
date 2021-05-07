@@ -1,4 +1,4 @@
-classdef BernoulliRBM < handle
+classdef BernoulliRBM < matlab.mixin.Heterogeneous & handle
     %BERNOULLIRBM Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -21,12 +21,12 @@ classdef BernoulliRBM < handle
     end
     
     methods
-        function rbm = BernoulliRBM(units)
-            rbm.visibleunits = units;
+        function rbm = BernoulliRBM(visibleunits, hiddenunits)
+            rbm.visibleunits = visibleunits;
+            rbm.hiddenunits = hiddenunits;
         end
         
-        function init(rbm, hiddenunits)
-            rbm.hiddenunits = hiddenunits;
+        function init(rbm)
             
             rbm.W = zeros(rbm.hiddenunits, rbm.visibleunits);
             rbm.vW = zeros(rbm.hiddenunits, rbm.visibleunits);
@@ -43,7 +43,7 @@ classdef BernoulliRBM < handle
             m = size(X, 2);
             for i = 1:options.epochs
                 randpos = randperm(m);
-                fprintf('\nEpoch: %d / %d', i, options.epochs);
+                fprintf('\nEpoch: %d / %d\n', i, options.epochs);
 
                 while idx <= m
                     endidx = min(idx + options.batch - 1, m);
@@ -92,11 +92,11 @@ classdef BernoulliRBM < handle
         end
         
         function X = rbmup(rbm, X)
-            X = sigmoid(repmat(rbm.c', size(X, 1), 1) + X * rbm.W');
+            X = sigmoid(repmat(rbm.c, 1, size(X, 2)) + rbm.W * X);
         end
         
         function X = rbmdown(rbm, X)
-            X = sigmoid(repmat(rbm.b', size(X, 1), 1) + X * rbm.W);
+            X = sigmoid(repmat(rbm.b, 1, size(X, 2)) + rbm.W' * X);
         end
     end
 end

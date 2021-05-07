@@ -18,14 +18,25 @@ if use_gpu
     y_test = gpuArray(y_test);
 end
 
-%% Test a single RBM
-options.epochs = 10;
+%% Build the DBN
+model = DBN();
+model.add(BernoulliRBM(784, 512));
+model.add(BernoulliRBM(512, 384));
+model.add(BernoulliRBM(384, 256));
+
+model.compile();
+
+%% Train the DBN
+options.epochs = 1;
 options.batch = 10;
 options.momentum = 0;
 options.alpha = 0.1;
 options.decay = 0.00001;
 options.k = 1;
 
-rbm = BernoulliRBM(784);
-rbm.init(512);
-rbm.fit(X_train, options);
+model.fit(X_train, options);
+
+%% Evaluate
+Xreconstruct = model.evaluate(X_train);
+m = size(X_train, 2);
+diff = (1/m) * sum(sum((X_train - Xreconstruct) .^ 2));
