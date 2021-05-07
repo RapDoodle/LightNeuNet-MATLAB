@@ -1,4 +1,4 @@
-classdef GAModel < handle
+classdef GAModel < matlab.mixin.Heterogeneous & handle
     %GAMODEL Summary of this class goes here
     %   Detailed explanation goes here
     
