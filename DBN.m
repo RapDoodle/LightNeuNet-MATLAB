@@ -46,6 +46,7 @@ classdef DBN < handle
         
         function fit(dbn, X, options)
             for i = 1:length(dbn.layers)
+                fprintf('[DBN] Fitting RBM: %d / %d\n', i, length(dbn.layers));
                 dbn.layers{i}.fit(X, options);
                 X = dbn.layers{i}.rbmup(X);
             end
@@ -60,6 +61,38 @@ classdef DBN < handle
             % Backward pass
             for i = length(dbn.layers):-1:1
                 X = dbn.layers{i}.rbmdown(X);
+            end
+        end
+        
+        function model = tosequential(dbn, options, outputlayer)
+            n = length(dbn.layers);
+            assert(n > 0);
+            assert(options{1} == 0);
+            assert(n + 1 == length(options));
+            
+            model = SequentialModel();
+            
+            % Input layer
+            model.add(InputLayer(dbn.layers{1}.visibleunits));
+            
+            % Hidden layers
+            for i = 2:n
+                model.add(DenseLayer(dbn.layers{i}.visibleunits, options{i}));
+            end
+            model.add(DenseLayer(dbn.layers{n}.hiddenunits, options{n+1}));
+            
+            % Output layer
+            model.add(outputlayer);
+            
+            % Compile the model
+            model.compile();
+            
+            % Copy variables
+            for i = 1:length(dbn.layers)
+                % i is the i-th layer in the DBN and the 'i+1'-th layer in 
+                % the SequentialModel
+                model.layers{i+1}.W = dbn.layers{i}.W;
+                model.layers{i+1}.b = dbn.layers{i}.c;
             end
         end
     end

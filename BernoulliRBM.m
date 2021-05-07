@@ -43,7 +43,7 @@ classdef BernoulliRBM < matlab.mixin.Heterogeneous & handle
             m = size(X, 2);
             for i = 1:options.epochs
                 randpos = randperm(m);
-                fprintf('\nEpoch: %d / %d\n', i, options.epochs);
+                fprintf('[BernoulliRBM] Epoch: %d / %d\n', i, options.epochs);
 
                 while idx <= m
                     endidx = min(idx + options.batch - 1, m);
