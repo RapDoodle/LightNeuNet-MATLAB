@@ -76,6 +76,9 @@ classdef WeightedLayer < Layer
             elseif strcmp(layer.activation, 'linear')
                 Alocal = Zlocal;
                 
+            elseif strcmp(layer.activation, 'leeoscillator')
+                Alocal = leeoscillator(Zlocal);
+                
             else
                 throw(MException('layer:unknownActivation', ...
                     'Unknown activation function %s', layer.activation));

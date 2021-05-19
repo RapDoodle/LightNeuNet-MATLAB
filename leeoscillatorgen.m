@@ -47,7 +47,6 @@ for i=-1:stepsize:1
     z(1) = 0.2;
     u(1) = 0.2;
     
-    valueOf_stimulus_i = sprintf('%0.5g', i);
     it = i + 0.02*sign(i);
     
     for t = 1:N-1     
@@ -66,6 +65,6 @@ for i=-1:stepsize:1
     idx = idx + 1;
 end
 
-save('lee_oscillator', 'Z', 'stepsize')
+save('leeoscillator', 'Z', 'stepsize')
 
 plot(xaixs, reshape(Z',[1,((2/stepsize)+1)*recordsize]), '.')

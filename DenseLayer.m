@@ -55,6 +55,9 @@ classdef DenseLayer < WeightedLayer
                 dense.dZ = (dense.nextlayer.W' * dense.nextlayer.dZ) .* ...
                     (1 - dense.A .^ 2);
                 
+            elseif strcmp(dense.activation, 'leeoscillator')
+                dense.dZ = dense.dA .* leeoscillatorGradient(dense.Z);
+                
             end
             
             dense.dW = (1/m) .* (dense.dZ * dense.prevlayer.A') + ...
