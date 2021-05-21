@@ -12,7 +12,7 @@ classdef OutputLayer < WeightedLayer
             %   Detailed explanation goes here
             output.units = units;
             output.activation = options.activation;
-            output.use_bias = options.use_bias;
+            output.usebias = options.usebias;
             output.kernel_initializer = options.kernel_initializer;
             output.options = options;
         end

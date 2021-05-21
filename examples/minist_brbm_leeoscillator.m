@@ -1,27 +1,14 @@
-%% Setting global parameters
+%% Environment setup
 clear
 clc
-usegpu = false;
 
 %% Load the MNIST dataset
 load mnist_uint8;
 
-Xtrain = double(X_train) / 255;
-ytrain = double(y_train);
-Xtest = double(X_test) / 255;
-ytest = double(y_test);
-
-if usegpu
-    Xtrain = gpuArray(Xtrain);
-    ytrain = gpuArray(ytrain);
-    Xtest = gpuArray(Xtest);
-    ytest = gpuArray(ytest);
-end
-
-clear X_train;
-clear y_train;
-clear X_test;
-clear y_test;
+Xtrain = double(Xtrain) / 255;
+ytrain = double(ytrain);
+Xtest = double(Xtest) / 255;
+ytest = double(ytest);
 
 %% Build the DBN
 model = DBN();
@@ -33,7 +20,7 @@ model.compile();
 
 %% Train the DBN
 options.epochs = 20;
-options.batch = 10;
+options.batchsize = 10;
 options.momentum = 0;
 options.alpha = 0.1;
 options.decay = 0.00001;
@@ -48,11 +35,11 @@ diff = (1/m) * sum(sum((Xtrain - Xreconstruct) .^ 2));
 
 %% Covert to sequential model
 hiddenoptions.activation = "leeoscillator";
-hiddenoptions.use_bias = true;
+hiddenoptions.usebias = true;
 hiddenoptions.kernel_initializer = "random";
 
 outoptions.activation = "softmax";
-outoptions.use_bias = true;
+outoptions.usebias = true;
 outoptions.kernel_initializer = "random";
 
 outputlayer = OutputLayer(10, outoptions);
@@ -60,8 +47,8 @@ outputlayer = OutputLayer(10, outoptions);
 seqmodel = model.tosequential({0, hiddenoptions, hiddenoptions, hiddenoptions}, outputlayer);
 
 %% Train
-options.batch = 128;
-options.epoch = 800;
+options.batchsize = 128;
+options.epochs = 800;
 options.learningrate = 0.00001;
 options.lambd = 1;
 options.loss = "crossentropy";

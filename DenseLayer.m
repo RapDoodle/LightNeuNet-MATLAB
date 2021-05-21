@@ -10,7 +10,7 @@ classdef DenseLayer < WeightedLayer
             dense.type = LayerType.HiddenLayer;
             dense.units = units;
             dense.activation = options.activation;
-            dense.use_bias = options.use_bias;
+            dense.usebias = options.usebias;
             dense.kernel_initializer = options.kernel_initializer;
             dense.options = options;
         end

@@ -1,22 +1,14 @@
-%% Setting global parameters
+%% Environment setup
 clear
 clc
-use_gpu = false;
 
 %% Load the MNIST dataset
 load mnist_uint8;
 
-X_train = double(X_train) / 255;
-y_train = double(y_train);
-X_test = double(X_test) / 255;
-y_test = double(y_test);
-
-if use_gpu
-    X_train = gpuArray(X_train);
-    y_train = gpuArray(y_train);
-    X_test = gpuArray(X_test);
-    y_test = gpuArray(y_test);
-end
+Xtrain = double(Xtrain) / 255;
+ytrain = double(ytrain);
+Xtest = double(Xtest) / 255;
+ytest = double(ytest);
 
 %% Model
 model = SequentialModel();
@@ -24,7 +16,7 @@ model = SequentialModel();
 model.add(InputLayer(784));
 
 options.activation = "leeoscillator";
-options.use_bias = true;
+options.usebias = true;
 options.kernel_initializer = "random";
 
 model.add(DenseLayer(512, options));
@@ -32,7 +24,7 @@ model.add(DenseLayer(384, options));
 model.add(DenseLayer(256, options));
 
 options.activation = "softmax";
-options.use_bias = true;
+options.usebias = true;
 options.kernel_initializer = "random";
 
 model.add(OutputLayer(10, options));
@@ -41,19 +33,18 @@ model.add(OutputLayer(10, options));
 model.compile();
 
 %% Train
-options.batch = 128;
-options.epoch = 200;
+options.batchsize = 128;
+options.epochs = 200;
 options.learningrate = 0.00001;
 options.lambd = 0.1;
 options.loss = "crossentropy";
 
-model.fit(X_train, y_train, options);
-
+model.fit(Xtrain, ytrain, options);
 
 %% Test
-probs = model.predict(X_test);
+probs = model.predict(Xtest);
 [~, y] = max(probs, [], 1);
 pred = bsxfun(@eq, y, (1:10)');
-correct = find(all(pred == y_test));
-accuracy = length(correct) / size(y_test, 2);
+correct = find(all(pred == ytest));
+accuracy = length(correct) / size(ytest, 2);
 fprintf('Classification accuracy is %3.2f%%\n', accuracy * 100);

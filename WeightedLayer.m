@@ -3,7 +3,7 @@ classdef WeightedLayer < Layer
     %   Detailed explanation goes here
     
     properties
-        use_bias
+        usebias
         activation
         kernel_initializer
         
@@ -57,7 +57,7 @@ classdef WeightedLayer < Layer
             Zlocal = layer.W * X;
             
             
-            if layer.use_bias
+            if layer.usebias
                 Zlocal = Zlocal + layer.b;
             end
             
@@ -102,7 +102,7 @@ classdef WeightedLayer < Layer
         end
         
         function newlayer = move(layer, newlayer)
-            newlayer.use_bias = layer.use_bias;
+            newlayer.usebias = layer.usebias;
             newlayer.activation = layer.activation;
             newlayer.kernel_initializer = layer.kernel_initializer;
             

@@ -46,7 +46,7 @@ classdef BernoulliRBM < matlab.mixin.Heterogeneous & handle
                 fprintf('[BernoulliRBM] Epoch: %d / %d\n', i, options.epochs);
 
                 while idx <= m
-                    endidx = min(idx + options.batch - 1, m);
+                    endidx = min(idx + options.batchsize - 1, m);
                     currentbatchsize = endidx - idx + 1;
                     v1 = zeros(size(X, 1), currentbatchsize);
 

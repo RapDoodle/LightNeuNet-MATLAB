@@ -60,18 +60,18 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
         function history = fit(model, X, y, options)
             % X should have a size of (n1, m)
             % y should have a size of (n2, m)
-            history = zeros(options.epoch, 1);
+            history = zeros(options.epochs, 1);
             idx = 1;
             m = size(X, 2);
-            for i = 1:options.epoch
+            for i = 1:options.epochs
                 randpos = randperm(m);
-                fprintf('\nEpoch: %d / %d\n', i, options.epoch);
+                fprintf('\nEpoch: %d / %d\n', i, options.epochs);
 
                 while idx <= m
-                    batchX = zeros(size(X, 1), options.batch);
-                    batchy = zeros(size(y, 1), options.batch);
+                    batchX = zeros(size(X, 1), options.batchsize);
+                    batchy = zeros(size(y, 1), options.batchsize);
 
-                    for k = idx:min(idx + options.batch - 1, m)
+                    for k = idx:min(idx + options.batchsize - 1, m)
                         batchX(:, k - idx + 1) = X(:, randpos(k));
                         batchy(:, k - idx + 1) = y(:, randpos(k));
                     end
@@ -84,7 +84,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                     model.outputlayer.backward(size(model.outputlayer.y, 2), options.lambd);
                     model.outputlayer.update(options.learningrate);
 
-                    idx = idx + options.batch;
+                    idx = idx + options.batchsize;
                 end
 
                 % disp(output.A(1, 1));
