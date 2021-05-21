@@ -17,7 +17,7 @@ model.add(InputLayer(784));
 
 options.activation = "leeoscillator";
 options.usebias = true;
-options.kernel_initializer = "random";
+options.kernelinitializer = "random";
 
 model.add(DenseLayer(512, options));
 model.add(DenseLayer(384, options));
@@ -25,7 +25,7 @@ model.add(DenseLayer(256, options));
 
 options.activation = "softmax";
 options.usebias = true;
-options.kernel_initializer = "random";
+options.kernelinitializer = "random";
 
 model.add(OutputLayer(10, options));
 

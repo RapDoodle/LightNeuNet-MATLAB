@@ -17,7 +17,7 @@ model.add(GAInputLayer(784));
 
 options.activation = "leeoscillator";
 options.usebias = true;
-options.kernel_initializer = "random";
+options.kernelinitializer = "random";
 
 model.add(GADenseLayer(512, options));
 model.add(GADenseLayer(384, options));
@@ -26,7 +26,7 @@ model.add(GADenseLayer(256, options));
 
 options.activation = "softmax";
 options.usebias = true;
-options.kernel_initializer = "random";
+options.kernelinitializer = "random";
 
 model.add(GAOutputLayer(10, options));
 

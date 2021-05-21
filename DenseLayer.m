@@ -11,7 +11,7 @@ classdef DenseLayer < WeightedLayer
             dense.units = units;
             dense.activation = options.activation;
             dense.usebias = options.usebias;
-            dense.kernel_initializer = options.kernel_initializer;
+            dense.kernelinitializer = options.kernelinitializer;
             dense.options = options;
         end
         

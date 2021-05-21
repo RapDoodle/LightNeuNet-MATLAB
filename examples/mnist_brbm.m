@@ -36,11 +36,11 @@ diff = (1/m) * sum(sum((Xtrain - Xreconstruct) .^ 2));
 %% Covert to sequential model
 hiddenoptions.activation = "sigmoid";
 hiddenoptions.usebias = true;
-hiddenoptions.kernel_initializer = "random";
+hiddenoptions.kernelinitializer = "random";
 
 outoptions.activation = "softmax";
 outoptions.usebias = true;
-outoptions.kernel_initializer = "random";
+outoptions.kernelinitializer = "random";
 
 outputlayer = OutputLayer(10, outoptions);
 

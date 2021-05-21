@@ -5,7 +5,7 @@ classdef WeightedLayer < Layer
     properties
         usebias
         activation
-        kernel_initializer
+        kernelinitializer
         
         A
         dA
@@ -34,13 +34,13 @@ classdef WeightedLayer < Layer
             
             layer.b = zeros(layer.units, 1);
             
-            if strcmp(layer.kernel_initializer, 'uniform')
+            if strcmp(layer.kernelinitializer, 'uniform')
                 layer.W = -1 + rand(layer.units, prevlayer.units) * 2;
             
-            elseif strcmp(layer.kernel_initializer, 'he')
+            elseif strcmp(layer.kernelinitializer, 'he')
                 layer.W = randn(layer.units, prevlayer.units) * sqrt(2 / prevlayer.units);
             
-            elseif strcmp(layer.kernel_initializer, 'random')
+            elseif strcmp(layer.kernelinitializer, 'random')
                 % layer.W = -1 + rand(layer.units, prevlayer.units) * 2;
                 epsilon_init = 0.12;
                 layer.W = rand(layer.units, prevlayer.units) * 2 * epsilon_init - epsilon_init;
@@ -104,7 +104,7 @@ classdef WeightedLayer < Layer
         function newlayer = move(layer, newlayer)
             newlayer.usebias = layer.usebias;
             newlayer.activation = layer.activation;
-            newlayer.kernel_initializer = layer.kernel_initializer;
+            newlayer.kernelinitializer = layer.kernelinitializer;
             
             newlayer.A = layer.A;
             newlayer.dA = layer.dA;
