@@ -17,7 +17,7 @@ for i = 1:n
             fprintf('[%5.2f] %d, %d, %d, %d, %d, %d\n', dz(i), row + 1, col1, row - 1, col2, m, n);
         end
         if dz(i) > 1
-            dz(i) = log(dz(i));
+            dz(i) = log(dz(i)) + 1;
         end
     end
 end

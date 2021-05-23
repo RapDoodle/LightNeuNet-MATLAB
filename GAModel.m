@@ -97,6 +97,27 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
             [~,sortidx] = sort(fitnesses, "descend");
             gamodel.forest = gamodel.forest(sortidx);
         end
+        
+        function mutateall(gamodel, options)
+            nummodels = length(gamodel.forest);
+            for i = 1:nummodels
+                numlayers = length(gamodel.forest{i}.layers);
+                for j = 1:numlayers
+                    gamodel.forest{i}.layers{j}.mutate(options.mutationrate)
+                end
+            end
+        end
+        
+        function replicatefrommodel(gamodel, model)
+            nummodels = length(gamodel.forest);
+            numlayers = length(model.layers);
+            for i = 1:nummodels
+                for j = 2:numlayers
+                    gamodel.forest{i}.layers{j}.W = model.layers{j}.W;
+                    gamodel.forest{i}.layers{j}.b = model.layers{j}.b;
+                end
+            end
+        end
     end
 end
 

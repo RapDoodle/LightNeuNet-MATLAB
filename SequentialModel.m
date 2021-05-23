@@ -109,6 +109,29 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                 idx = 1;
             end
         end
+        
+        function gamodel = togamodel(model)
+            n = length(model.layers);
+            assert(n > 0);
+            
+            gamodel = GAModel();
+            % Input layer
+            gamodel.add(GAInputLayer(model.layers{1}.units));
+            
+            % Hidden layers and output layers
+            for i = 2:(n-1)
+                gamodel.add(GADenseLayer(model.layers{i}.units, ...
+                    model.layers{i}.options));
+            end
+            gamodel.add(GAOutputLayer(model.layers{n}.units, ...
+                model.layers{n}.options));
+            
+            % Copy weights
+            for i = 2:n
+                gamodel.layersbp{i}.W = model.layers{i}.W;
+                gamodel.layersbp{i}.b = model.layers{i}.b;
+            end
+        end
     end
 end
 
