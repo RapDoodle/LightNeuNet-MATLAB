@@ -28,6 +28,9 @@ classdef OutputLayer < WeightedLayer
                 output.dZ = output.A - output.y;
                 output.dW = (1/m) .* (output.dZ * output.prevlayer.A');
                 output.db = (1/m) .* sum(output.dZ, 2);
+            else
+                throw(MException('OutputLayer:notImplemented', ...
+                    'Not implemented activation function for backpropagation.'));
             end
             
             output.prevlayer.backward(m, lambd);

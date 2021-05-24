@@ -96,6 +96,10 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                 
                 if strcmp(options.loss, "crossentropy")
                     J = (1/m) * sum(sum((-y) .* log(probs) - (1-y) .* log(1-probs)));
+                elseif strcmp(options.loss, "mse")
+                    J = (1/m) * sum(sum((y-probs).^2));
+                elseif strcmp(options.loss, "mae")
+                    J = (1/m) * sum(sum(abs(y-probs)));
                 else
                     % Not found.
                     J = 0;
@@ -103,7 +107,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                 
                 history(i) = J;
                 
-                fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', ...
+                fprintf('Epoch: %d: Classification accuracy is %3.2f%%, cost: %f\n', ...
                     i, accuracy * 100, J);
 
                 idx = 1;
