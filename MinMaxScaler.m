@@ -27,6 +27,10 @@ classdef MinMaxScaler < handle
             scaler.fit(X, dim);
             Y = scaler.transform(X);
         end
+        
+        function X = inversetransform(scaler, Y)
+            X = Y .* (scaler.mmax - scaler.mmin) + scaler.mmin;
+        end
     end
 end
 

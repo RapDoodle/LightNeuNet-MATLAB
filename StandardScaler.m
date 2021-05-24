@@ -27,6 +27,10 @@ classdef StandardScaler < handle
             scaler.fit(X, dim);
             Y = scaler.transform(X);
         end
+        
+        function X = inversetransform(scaler, Y)
+            X = Y .* scaler.mstd + scaler.mmean;
+        end
     end
 end
 
