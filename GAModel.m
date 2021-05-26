@@ -56,7 +56,7 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
                 minfitnesses(generation) = gamodel.forest{nummodels}.fitness;
                 maxfitnesses(generation) = gamodel.forest{1}.fitness;
                 
-                fprintf('Fitness: [%3.2f%% / %3.2f%%]\n', ...
+                fprintf('Fitness: [%3.2f / %3.2f]\n', ...
                     minfitnesses(generation), maxfitnesses(generation));
 
                 % Natural selection
