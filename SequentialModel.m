@@ -87,28 +87,32 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                     idx = idx + options.batchsize;
                 end
 
-                % disp(output.A(1, 1));
                 probs = model.inputlayer.forward(X, false);
-                [~, y_out] = max(probs, [], 1);
-                pred = bsxfun(@eq, y_out, (1:10)');
-                correct = find(all(pred == y));
-                accuracy = length(correct) / size(y, 2);
                 
                 if strcmp(options.loss, "crossentropy")
                     J = (1/m) * sum(sum((-y) .* log(probs) - (1-y) .* log(1-probs)));
-                elseif strcmp(options.loss, "mse")
-                    J = (1/m) * sum(sum((y-probs).^2));
-                elseif strcmp(options.loss, "mae")
-                    J = (1/m) * sum(sum(abs(y-probs)));
+                    [~, yout] = max(probs, [], 1);
+                    pred = bsxfun(@eq, yout, (1:size(y, 1))');
+                    correct = find(all(pred == y));
+                    accuracy = length(correct) / size(y, 2);
+                    fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', ...
+                        i, accuracy * 100, J);
+                elseif strcmp(options.loss, "mse") || strcmp(options.loss, "mae")
+                    if strcmp(options.loss, "mse")
+                        % Mean squared error
+                        J = (1/m) * sum(sum((y-probs).^2));
+                    else
+                        % Mean absolute error
+                        J = (1/m) * sum(sum(abs(y-probs)));
+                    end
+                    fprintf('Epoch: %d: loss: %f\n', i, J);
                 else
-                    % Not found.
-                    J = 0;
+                    % Metric not found
+                    throw(MException('SequentialModel:unknownMetric', ...
+                        'The model does not have a valid metric.'));
                 end
                 
                 history(i) = J;
-                
-                fprintf('Epoch: %d: Classification accuracy is %3.2f%%, cost: %f\n', ...
-                    i, accuracy * 100, J);
 
                 idx = 1;
             end
