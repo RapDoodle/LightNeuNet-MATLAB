@@ -13,7 +13,7 @@ classdef DBN < handle
         end
         
         function add(dbn, layer)
-            if ~isa(layer, 'BernoulliRBM')
+            if ~isa(layer, 'BernoulliRBM') && ~isa(layer, 'GaussianBernoulliRBM')
                 throw(MException('DBN:notAValidLayer', ...
                     'Not a valid layer.'));
             end
