@@ -57,15 +57,22 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
             
         end
         
-        function history = fit(model, X, y, options)
+        function history = fit(model, X, y, options, verbose)
             % X should have a size of (n1, m)
             % y should have a size of (n2, m)
+            % verbose can be ignored. By defulat: 1
+            if nargin < 5
+                verbose = 1;
+            end
+            
             history = zeros(options.epochs, 1);
             idx = 1;
             m = size(X, 2);
             for i = 1:options.epochs
                 randpos = randperm(m);
-                fprintf('\nEpoch: %d / %d\n', i, options.epochs);
+                if verbose ~= 0
+                    fprintf('\nEpoch: %d / %d\n', i, options.epochs);
+                end
 
                 while idx <= m
                     batchX = zeros(size(X, 1), options.batchsize);
@@ -82,7 +89,23 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                     % Backward propagation
                     model.outputlayer.y = batchy;
                     model.outputlayer.backward(size(model.outputlayer.y, 2), options.lambd);
-                    model.outputlayer.update(options.learningrate);
+                    
+                    % Has the field optimizer adn did not specified 'none'
+                    if isfield(options, 'optimizer') && strcmp(options.optimizer, 'none') == 0
+                       if strcmp(options.optimizer, 'adam')
+                           model.outputlayer.updateadam( ...
+                               options.learningrate, ...
+                               options.beta1, ...
+                               options.beta2, ...
+                               options.epsilon, ...
+                               i);
+                       else
+                           throw(MException('SequentialModel:unknownOptimizer', ...
+                                'Unkown optimizer.'));
+                       end
+                    else
+                        model.outputlayer.update(options.learningrate);
+                    end
 
                     idx = idx + options.batchsize;
                 end
@@ -95,8 +118,10 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                     pred = bsxfun(@eq, yout, (1:size(y, 1))');
                     correct = find(all(pred == y));
                     accuracy = length(correct) / size(y, 2);
-                    fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', ...
-                        i, accuracy * 100, J);
+                    if verbose ~= 0
+                        fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', ...
+                            i, accuracy * 100, J);
+                    end
                 elseif strcmp(options.loss, "mse") || strcmp(options.loss, "mae")
                     if strcmp(options.loss, "mse")
                         % Mean squared error
@@ -105,7 +130,9 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                         % Mean absolute error
                         J = (1/m) * sum(sum(abs(y-probs)));
                     end
-                    fprintf('Epoch: %d: loss: %f\n', i, J);
+                    if verbose ~= 0
+                        fprintf('Epoch: %d: loss: %f\n', i, J);
+                    end
                 else
                     % Metric not found
                     throw(MException('SequentialModel:unknownMetric', ...

@@ -19,6 +19,12 @@ classdef WeightedLayer < Layer
         b
         db
         
+        vdW
+        vdb
+        
+        sdW
+        sdb
+        
         options
     end
     
@@ -49,6 +55,12 @@ classdef WeightedLayer < Layer
                 throw(MException('layer:unknownInitializer', ...
                     'Unknown initializer %s', layer.initializer));
             end
+            
+            % Default for Adam
+            layer.vdW = 0;
+            layer.vdb = 0;
+            layer.sdW = 0;
+            layer.sdb = 0;
             
             layer.prevlayer = prevlayer;
         end
@@ -92,12 +104,45 @@ classdef WeightedLayer < Layer
             y = Alocal;
         end
         
-        function update(layer, learning_rate)
-            layer.W = layer.W - learning_rate * layer.dW;
-            layer.b = layer.b - learning_rate * layer.db;
+        function updateadam(layer, learningrate, beta1, beta2, epsilon, t)
+            % Update the weights of the weighted layer
+            % learningrate: the learning rate for each gradient descent
+            % beta1: hyperparameter for Momentum, recommend: 0.9
+            % beta2: hyperparameter for RMSProp, recommend: 0.999
+            % epsilon: recommend: 0.00000001
+            % t: current iteration
+            
+            % Momentum
+            layer.vdW = beta1 * layer.vdW + (1-beta1) * layer.dW;
+            layer.vdb = beta1 * layer.vdb + (1-beta1) * layer.db;
+            
+            % RMSProp
+            layer.sdW = beta2 * layer.sdW + (1-beta2) * (layer.dW .^ 2);
+            layer.sdb = beta2 * layer.sdb + (1-beta2) * (layer.db .^ 2);
+            
+            % Bias correction
+            vdWcorrected = layer.vdW / (1-(beta1^t));
+            vdbcorrected = layer.vdb / (1-(beta1^t));
+            sdWcorrected = layer.sdW / (1-(beta2^t));
+            sdbcorrected = layer.sdb / (1-(beta2^t));
+            
+            layer.W = layer.W - learningrate * ...
+                (vdWcorrected ./ (sqrt(sdWcorrected) + epsilon));
+            layer.b = layer.b - learningrate * ...
+                (vdbcorrected ./ (sqrt(sdbcorrected) + epsilon));
             
             if isa(layer.prevlayer, 'WeightedLayer')
-                layer.prevlayer.update(learning_rate);
+                layer.prevlayer.updateadam(...
+                    learningrate, beta1, beta2, epsilon, t);
+            end
+        end
+        
+        function update(layer, learningrate)
+            layer.W = layer.W - learningrate * layer.dW;
+            layer.b = layer.b - learningrate * layer.db;
+            
+            if isa(layer.prevlayer, 'WeightedLayer')
+                layer.prevlayer.update(learningrate);
             end
         end
         
