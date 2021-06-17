@@ -38,16 +38,23 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
             end
         end
         
-        function [minfitnesses, maxfitnesses] = run(gamodel, func, X, y, options)
+        function [minfitnesses, maxfitnesses] = run(gamodel, func, X, y, options, verbose)
+            % verbose can be ignored. By defulat: 1
+            if nargin < 6
+                verbose = 1;
+            end
+            
             nummodels = length(gamodel.forest);
             minfitnesses = zeros(options.generations, 1);
             maxfitnesses = zeros(options.generations, 1);
             
             for generation = 1:options.generations
                 for i = 1:nummodels
-                    if mod(i, 10) == 0 || i == 1
-                        fprintf('[Generation %d / %d] Simulating: %d / %d\n', ...
-                        generation, options.generations, i, nummodels);
+                    if verbose == 2
+                        if mod(i, 10) == 0 || i == 1
+                            fprintf('[Generation %d / %d] Simulating: %d / %d\n', ...
+                            generation, options.generations, i, nummodels);
+                        end
                     end
                     func(gamodel.forest{i}, X, y);
                 end
@@ -56,8 +63,11 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
                 minfitnesses(generation) = gamodel.forest{nummodels}.fitness;
                 maxfitnesses(generation) = gamodel.forest{1}.fitness;
                 
-                fprintf('Fitness: [%3.2f / %3.2f]\n', ...
-                    minfitnesses(generation), maxfitnesses(generation));
+                if verbose > 0
+                    fprintf('[Generation [%d / %d] Fitness: %3.2f / %3.2f]\n', ...
+                        generation, options.generations, ...
+                        minfitnesses(generation), maxfitnesses(generation));
+                end
 
                 % Natural selection
                 keepidx = int32(nummodels * options.keeprate);
