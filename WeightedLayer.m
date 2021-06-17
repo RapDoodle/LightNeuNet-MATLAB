@@ -68,7 +68,6 @@ classdef WeightedLayer < Layer
         function y = forward(layer, X, cache)
             Zlocal = layer.W * X;
             
-            
             if layer.usebias
                 Zlocal = Zlocal + layer.b;
             end
