@@ -112,26 +112,33 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
 
                 probs = model.inputlayer.forward(X, false);
                 
-                if strcmp(options.loss, "crossentropy")
-                    J = (1/m) * sum(sum((-y) .* log(probs) - (1-y) .* log(1-probs)));
+                if strcmp(options.loss, "crossentropy") || strcmp(options.loss, "binarycrossentropy")
+                    if strcmp(options.loss, "binarycrossentropy")
+                        loss = (1/m) * sum(sum((-y) .* log(probs) - (1-y) .* log(1-probs)));
+                    elseif strcmp(options.loss, "crossentropy")
+                        loss = (1/m) * sum(sum((-y) .* log(probs)));
+                    else
+                        % This line of code should never be executed
+                        loss = -1;
+                    end
                     [~, yout] = max(probs, [], 1);
                     pred = bsxfun(@eq, yout, (1:size(y, 1))');
                     correct = find(all(pred == y));
                     accuracy = length(correct) / size(y, 2);
                     if verbose ~= 0
                         fprintf('Epoch: %d: Classification accuracy is %3.2f%%, loss: %f\n', ...
-                            i, accuracy * 100, J);
+                            i, accuracy * 100, loss);
                     end
                 elseif strcmp(options.loss, "mse") || strcmp(options.loss, "mae")
                     if strcmp(options.loss, "mse")
                         % Mean squared error
-                        J = (1/m) * sum(sum((y-probs).^2));
+                        loss = (1/m) * sum(sum((y-probs).^2));
                     else
                         % Mean absolute error
-                        J = (1/m) * sum(sum(abs(y-probs)));
+                        loss = (1/m) * sum(sum(abs(y-probs)));
                     end
                     if verbose ~= 0
-                        fprintf('Epoch: %d: loss: %f\n', i, J);
+                        fprintf('Epoch: %d: loss: %f\n', i, loss);
                     end
                 else
                     % Metric not found
@@ -139,7 +146,7 @@ classdef SequentialModel < matlab.mixin.Heterogeneous & handle
                         'The model does not have a valid metric.'));
                 end
                 
-                history(i) = J;
+                history(i) = loss;
 
                 idx = 1;
             end
