@@ -63,7 +63,9 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
                 minfitnesses(generation) = gamodel.forest{nummodels}.fitness;
                 maxfitnesses(generation) = gamodel.forest{1}.fitness;
                 
-                if verbose > 0
+                if verbose > 0 || ... 
+                        (verbose == -1 && generation == 1) || ...
+                        (verbose == -1 && generation ~= 1 && maxfitnesses(generation) > maxfitnesses(generation - 1))
                     fprintf('[Generation [%d / %d] Fitness: %3.2f / %3.2f]\n', ...
                         generation, options.generations, ...
                         minfitnesses(generation), maxfitnesses(generation));
@@ -81,8 +83,16 @@ classdef GAModel < matlab.mixin.Heterogeneous & handle
                 for i = keepidx+1:nummodels
                     r = rand();
                     sela = find(r>cp, 1, 'last');
-                    r = rand();
-                    selb = find(r>cp, 1, 'last');
+                    
+                    selb = sela;
+                    while selb == sela
+                        r = rand();
+                        selb = find(r>cp, 1, 'last');
+                    end
+                    
+                    if sela == selb
+                        disp("a=" + sela + " b=" + selb);
+                    end
                     modela = gamodel.forest{sela};
                     modelb = gamodel.forest{selb};
 
