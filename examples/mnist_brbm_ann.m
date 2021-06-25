@@ -48,8 +48,8 @@ seqmodel = model.tosequential({0, hiddenoptions, hiddenoptions, hiddenoptions}, 
 
 %% Train
 options.batchsize = 128;
-options.epochs = 30;
-options.learningrate = 0.001;
+options.epochs = 50;
+options.learningrate = 0.0001;
 options.lambd = 1;
 options.loss = "crossentropy";
 
@@ -61,4 +61,8 @@ probs = seqmodel.predict(Xtest);
 pred = bsxfun(@eq, y, (1:10)');
 correct = find(all(pred == ytest));
 accuracy = length(correct) / size(ytest, 2);
-fprintf('Classification accuracy is %3.2f%%\n', accuracy * 100);
+fprintf('Classification accuracy on test set is %3.2f%%\n', accuracy * 100);
+
+%% Results
+% Epoch: 50: Classification accuracy is 90.25%, loss: 0.578495
+% Classification accuracy on test set is 90.69%
