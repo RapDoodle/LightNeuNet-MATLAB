@@ -58,10 +58,19 @@ options.mutationrate = 0.05;
 gamodel.mutateall(options);
 
 %% Optimize with GA
-options.keeprate = 0.6;
-options.mutationrate = 0.01;
-options.generations = 300;
+options.keeprate = 0.25;
+options.mutationrate = 0.03;
+options.generations = 500;
 [minfitnesses, maxfitnesses] = gamodel.run(@forwardpred, Xtrain, ytrain, options);
 
+%% Test
+probs = gamodel.forest{1}.predict(Xtest);
+[~, y] = max(probs, [], 1);
+pred = bsxfun(@eq, y, [1:10]');
+correct = find(all(pred == ytest));
+accuracy = length(correct) / size(ytest, 2);
+fprintf('\nClassification accuracy on test set is %3.2f%%\n', accuracy * 100);
+
 %% Results
-% [Generation 300 / 300] Fitness: [91.72% / 92.49%]
+% [Generation [500 / 500] Fitness: 68.03 / 76.50]
+% Classification accuracy on test set is 76.15%

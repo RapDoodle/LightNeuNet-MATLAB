@@ -34,7 +34,7 @@ m = size(Xtrain, 2);
 diff = (1/m) * sum(sum((Xtrain - Xreconstruct) .^ 2));
 
 %% Covert to sequential model
-hiddenoptions.activation = "leeoscillator";
+hiddenoptions.activation = "sigmoid";
 hiddenoptions.usebias = true;
 hiddenoptions.kernelinitializer = "random";
 
@@ -46,6 +46,15 @@ outputlayer = OutputLayer(10, outoptions);
 
 seqmodel = model.tosequential({0, hiddenoptions, hiddenoptions, hiddenoptions}, outputlayer);
 
+%% Train
+options.batchsize = 128;
+options.epochs = 20;
+options.learningrate = 0.001;
+options.lambd = 1;
+options.loss = "crossentropy";
+
+seqmodel.fit(Xtrain, ytrain, options);
+
 %% Convert to GA model
 gamodel = seqmodel.togamodel();
 
@@ -54,14 +63,23 @@ gamodel.populate(50);
 gamodel.replicatefrommodel(seqmodel);
 
 %% Introduce variations from pre-trained model
-options.mutationrate = 0.05;
+options.mutationrate = 0.02;
 gamodel.mutateall(options);
 
 %% Optimize with GA
-options.keeprate = 0.6;
-options.mutationrate = 0.01;
-options.generations = 500;
+options.keeprate = 0.25;
+options.mutationrate = 0.03;
+options.generations = 3000;
 [minfitnesses, maxfitnesses] = gamodel.run(@forwardpred, Xtrain, ytrain, options);
 
+%% Test
+probs = gamodel.forest{1}.predict(Xtest);
+[~, y] = max(probs, [], 1);
+pred = bsxfun(@eq, y, [1:10]');
+correct = find(all(pred == ytest));
+accuracy = length(correct) / size(ytest, 2);
+fprintf('\nClassification accuracy on test set is %3.2f%%\n', accuracy * 100);
+
 %% Results
-% [Generation 500 / 500] Fitness: [85.63% / 86.70%]
+% [Generation [3000 / 3000] Fitness: 84.00 / 93.99]
+% Classification accuracy on test set is 93.65%
